@@ -12,7 +12,10 @@ impl Pattern for NominalPhrase {
         loop {
             let tok = tokens.get(cursor)?;
 
-            if tok.kind.is_adjective() || tok.kind.is_determiner() {
+            if tok.kind.is_adjective()
+                || tok.kind.is_determiner()
+                || tok.kind.is_verb_progressive_form()
+            {
                 if let Some(next) = tokens.get(cursor + 1) {
                     if next.kind.is_whitespace() {
                         cursor += 2;
@@ -114,6 +117,26 @@ mod tests {
     #[test]
     fn simplest_way() {
         let doc = Document::new_markdown_default_curated("a way");
+        assert!(
+            NominalPhrase
+                .matches(doc.get_tokens(), doc.get_source())
+                .is_some()
+        );
+    }
+
+    #[test]
+    fn progressive_way() {
+        let doc = Document::new_markdown_default_curated("a winning way");
+        assert!(
+            NominalPhrase
+                .matches(doc.get_tokens(), doc.get_source())
+                .is_some()
+        );
+    }
+
+    #[test]
+    fn perfect_way() {
+        let doc = Document::new_markdown_default_curated("a failed way");
         assert!(
             NominalPhrase
                 .matches(doc.get_tokens(), doc.get_source())
